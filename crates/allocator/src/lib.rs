@@ -11,7 +11,6 @@
 #![no_std]
 #![feature(result_option_inspect)]
 #![cfg_attr(feature = "allocator_api", feature(allocator_api))]
-
 #[cfg(feature = "bitmap")]
 mod bitmap;
 #[cfg(feature = "bitmap")]
@@ -31,6 +30,17 @@ pub use slab::SlabByteAllocator;
 mod tlsf;
 #[cfg(feature = "tlsf")]
 pub use tlsf::TlsfByteAllocator;
+
+
+#[cfg(feature = "early")]
+mod early;
+#[cfg(feature = "early")]
+pub use early::EarlyByteAllocator;
+#[cfg(feature = "early")]
+pub use early::EarlyPageAllocator;
+#[cfg(feature = "early")]
+pub use early::EarlyAllocator;
+
 
 use core::alloc::Layout;
 use core::ptr::NonNull;

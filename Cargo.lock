@@ -43,6 +43,7 @@ dependencies = [
  "rand",
  "rlsf",
  "slab_allocator",
+ "spinlock",
 ]
 
 [[package]]

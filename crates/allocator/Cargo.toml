@@ -11,22 +11,22 @@ documentation = "https://rcore-os.github.io/arceos/allocator/index.html"
 
 [features]
 default = []
-full = ["bitmap", "tlsf", "slab", "buddy", "allocator_api"]
+full = ["bitmap", "tlsf", "slab", "buddy", "allocator_api","early"]
 
 bitmap = ["dep:bitmap-allocator"]
 
 tlsf = ["dep:rlsf"]
 slab = ["dep:slab_allocator"]
 buddy = ["dep:buddy_system_allocator"]
-
 allocator_api = []
+early = ["dep:buddy_system_allocator", "dep:bitmap-allocator"]
 
 [dependencies]
 buddy_system_allocator = { version = "0.9", default-features = false, optional = true }
 slab_allocator = { path = "../slab_allocator", optional = true }
 rlsf = { version = "0.2", optional = true }
 bitmap-allocator = { git = "https://github.com/rcore-os/bitmap-allocator.git", rev = "88e871a", optional = true }
-
+spinlock = { path = "../spinlock" }
 [dev-dependencies]
 allocator = { path = ".", features = ["full"] }
 rand = { version = "0.8", features = ["small_rng"] }
