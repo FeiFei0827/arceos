@@ -36,7 +36,7 @@
 extern crate log;
 
 mod platform;
-
+pub mod random;
 pub mod arch;
 pub mod cpu;
 pub mod mem;

@@ -331,6 +331,13 @@ pub mod display {
         pub fn ax_framebuffer_flush();
     }
 }
+///random api
+pub mod random {
+    define_api! {
+        /// Returns the random number.
+        pub fn ax_random() -> u128;
+    }
+}
 
 /// Input/output operations.
 pub mod io {
