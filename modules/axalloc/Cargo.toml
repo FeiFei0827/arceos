@@ -10,8 +10,8 @@ repository = "https://github.com/rcore-os/arceos/tree/main/modules/axalloc"
 documentation = "https://rcore-os.github.io/arceos/axalloc/index.html"
 
 [features]
-#default = ["tlsf"]
-default = ["early"]
+default = ["tlsf"]
+#default = ["early"]
 tlsf = ["allocator/tlsf"]
 slab = ["allocator/slab"]
 buddy = ["allocator/buddy"]

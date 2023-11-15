@@ -71,6 +71,7 @@ members = [
     "apps/task/yield",
     "apps/task/priority",
     "apps/task/tls",
+    "apps/ex5",
 ]
 
 [profile.release]
