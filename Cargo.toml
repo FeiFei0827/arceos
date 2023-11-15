@@ -40,6 +40,7 @@ members = [
     "modules/axconfig",
     "modules/axdisplay",
     "modules/axdriver",
+    "modules/axdtb",
     "modules/axfs",
     "modules/axhal",
     "modules/axlog",

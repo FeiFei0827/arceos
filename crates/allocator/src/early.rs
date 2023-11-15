@@ -1,8 +1,8 @@
 use spinlock::SpinNoIrq;
 use core::{ptr::NonNull, alloc::Layout};
 use crate::{ByteAllocator, AllocError, BaseAllocator,AllocResult, PageAllocator};
-const MIN_HEAP_SIZE: usize = 0x8000; // 32 K
-const PAGE_SIZE: usize = 0x1000;
+//const MIN_HEAP_SIZE: usize = 0x8000; // 32 K
+//const PAGE_SIZE: usize = 0x1000;
 pub struct EarlyByteAllocator {
     start: usize,
     pos: usize,
