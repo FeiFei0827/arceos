@@ -1,3 +1,4 @@
+#![feature(asm_const)]
 #![cfg_attr(feature = "axstd", no_std)]
 #![cfg_attr(feature = "axstd", no_main)]
 
@@ -62,18 +63,36 @@ impl AppHeader {
 fn main() {
     let apps_start = PLASH_START as *const u8;
     let app_info = AppHeader::read_from_apps(apps_start);
-    println!("Load payload ...\n");
-    println!("__________________________________________________________\n");
+    println!("Load payload ok!");
+    // app running aspace
+    // SBI(0x8000_0000) -> APP <- Kernel(0x8020_0000)
+    // 0xffff_ffc0_0000_0000
+    const RUN_START:usize= 0xffff_ffc0_8010_0000;
+
     for i in 0..app_info.apps_num {
         let app_size = app_info.app_size[i];
         let app_start = app_info.app_start[i];
-        let code = unsafe {core::slice::from_raw_parts(app_start, app_size)};
-        println!("load app{}, size:{}", i, app_size);
-        println!("content: {:?}\n", code);
-        println!("__________________________________________________________\n");
-    }
+        let load = unsafe {
+            core::slice::from_raw_parts(app_start, app_size)
+        };
+        let run_code = unsafe {
+            core::slice::from_raw_parts_mut(RUN_START as *mut u8, app_size)
+        };
+        run_code.copy_from_slice(load);
+        println!("run code {:?}; address [{:?}]", run_code, run_code.as_ptr());
+        println!("Execute app ...\n");
 
-    println!("Load payload ok!");
+        // execute app
+        unsafe { core::arch::asm!("
+            li      t2, {run_start}
+            jalr    t2",
+            run_start = const RUN_START,
+        )}
+        let clear_value = 0;
+        unsafe {
+            ptr::write_bytes(run_code.as_mut_ptr(), clear_value, run_code.len());
+        }
+    }
 
 }
 
