@@ -30,6 +30,8 @@ SECTIONS
         *(.data.boot_page_table)
         . = ALIGN(4K);
         *(.data .data.*)
+        *(.data.app_page_table)
+        . = ALIGN(4K);
         *(.sdata .sdata.*)
         *(.got .got.*)
     }
