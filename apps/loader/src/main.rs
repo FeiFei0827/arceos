@@ -94,38 +94,40 @@ fn main() {
     let app_info = AppHeader::read_from_apps(app_start);
     let num = app_info.apps_num;
     println!("Load payload ...\n");
+    const RUN_START:usize= 0xffff_ffc0_8010_0000;
     for i in 0..num {
         let app_size = app_info.app_size[i];
         let app_start = app_info.app_start[i];
-        let code = unsafe {
+        let load_code = unsafe {
             core::slice::from_raw_parts(app_start, app_size)
         };
-        println!("load app {}, size is {}", i, app_size);
-        println!("content: {:?}\n", code);
+        println!("move app {}, size is {}", i, app_size);
+        //println!("content: {:?}", load_code);
+        let run_code = unsafe {
+            core::slice::from_raw_parts_mut(RUN_START as *mut u8, app_size)
+        };
+        run_code.copy_from_slice(load_code);
+        //println!("run code {:?}; address [{:?}]", run_code, run_code.as_ptr());
+        println!("Execute app ...\n");
+
+        // execute app
+        unsafe { core::arch::asm!("
+            la      a0, {abi_table}
+            li      t2, {run_start}
+            jalr    t2",
+            run_start = const RUN_START,
+            abi_table = sym ABI_TABLE,
+            clobber_abi("C")
+        )}
+        // 清除 run_code 中的内容，将所有字节设为 0
+        let clear_value = 0;
+        unsafe {
+            ptr::write_bytes(run_code.as_mut_ptr(), clear_value, run_code.len());
+        }
     }
-    // app running aspace
-    // SBI(0x8000_0000) -> APP <- Kernel(0x8020_0000)
-    // 0xffff_ffc0_0000_0000
-    const RUN_START:usize= 0xffff_ffc0_8010_0000;
-    // execute app
-        let arg0: u8 = b'A';
-    unsafe { core::arch::asm!("
-        li      t0, {abi_num}
-        slli    t0, t0, 3
-        la      t1, {abi_table}
-        add     t1, t1, t0
-        ld      t1, (t1)
-        jalr    t1
-        li      t2, {run_start}
-        jalr    t2
-        j       .",
-        run_start = const RUN_START,
-        abi_table = sym ABI_TABLE,
-        //abi_num = const SYS_HELLO,
-        abi_num = const SYS_TERMINATE,
-         in("a0") arg0,
-)}
+
 }
+
 #[inline]
 fn bytes_to_usize(bytes: &[u8]) -> usize {
     usize::from_be_bytes(bytes.try_into().unwrap())
